@@ -22,9 +22,22 @@ public class ParticipantSlotsView extends View {
     public static class ParticipantSlotsViewUpdater extends TableUpdater<SlotRow> {
 
         public Effect<SlotRow> onEvent(ParticipantSlotEntity.Event event) {
-            // Supply your own implementation
-            return effects().ignore();
+            logger.debug("Processing {}", event);
+
+            return switch (event) {
+                case ParticipantSlotEntity.Event.MarkedAvailable e ->
+                        effects().updateRow(new SlotRow(e.slotId(), e.participantId(), e.participantType().name(), "", "available"));
+                case ParticipantSlotEntity.Event.UnmarkedAvailable e ->
+                        effects().updateRow(new SlotRow(e.slotId(), e.participantId(), e.participantType().name(), "", "unavailable"));
+                case ParticipantSlotEntity.Event.Booked e ->
+                        effects().updateRow(new SlotRow(e.slotId(), e.participantId(), e.participantType().name(), e.bookingId(), "booked"));
+                case ParticipantSlotEntity.Event.Canceled e ->
+                        effects().updateRow(new SlotRow(e.slotId(), e.participantId(), e.participantType().name(), "", "available"));
+
+            };
         }
+
+        // Deletion?
     }
 
     public record SlotRow(
@@ -41,12 +54,14 @@ public class ParticipantSlotsView extends View {
     public record SlotList(List<SlotRow> slots) {
     }
 
-    // @Query("SELECT .... ")
+    @SuppressWarnings("unused")
+    @Query("SELECT * AS slots FROM view_participants_slots WHERE participantId = :participantId")
     public QueryEffect<SlotList> getSlotsByParticipant(String participantId) {
         return queryResult();
     }
 
-    // @Query("SELECT ...")
+    @SuppressWarnings("unused")
+    @Query("SELECT * AS slots FROM view_participants_slots WHERE participantId = :participantId AND status = :status")
     public QueryEffect<SlotList> getSlotsByParticipantAndStatus(ParticipantStatusInput input) {
         return queryResult();
     }

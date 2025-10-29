@@ -158,7 +158,7 @@ The easiest way to make sure your flight service is performing as designed is to
 
 Start by marking availability in the slot `bestslot` for 3 participants: `alice`, `superplane`, and `superteacher` for the `student`, `aircraft`, and `instructor` respectively.
 
-```
+```bash
 curl -v -H "Content-Type: application/json" -X POST -d '{"participantId": "alice", "participantType": "student"}' localhost:9000/flight/availability/bestslot
 
 curl -v -H "Content-Type: application/json" -X POST -d '{"participantId": "superplane", "participantType": "aircraft"}' localhost:9000/flight/availability/bestslot
@@ -167,7 +167,7 @@ curl -v -H "Content-Type: application/json" -X POST -d '{"participantId": "super
 ```
 
 Query the slot's internal state:
-```
+```bash
 curl -H "Content-Type: application/json" localhost:9000/flight/availability/bestslot
 ```
 
@@ -192,22 +192,22 @@ curl -H "Content-Type: application/json" localhost:9000/flight/availability/best
 ```
 
 Now you can query for all of Alice's availability slots:
-```
+```bash
 curl -v localhost:9000/flight/slots/alice/available
 ```
 
 And the `superplane`:
-```
+```bash
 curl -v localhost:9000/flight/slots/superplane/available
 ```
 
 Now book the slot:
-```
+```bash
 curl -v -H "Content-Type: application/json" localhost:9000/flight/bookings/bestslot -d '{"bookingId": "booking4", "aircraftId": "superplane", "instructorId": "superteacher", "studentId": "alice"}'
 ```
 
 Check alice's booked timeslots:
-```
+```bash
 curl -v localhost:9000/flight/slots/alice/booked
 ```
 
@@ -229,7 +229,7 @@ Note that there's enough information in the output of this timeslot query to can
 
 Cancel the booking, which should result in all 3 participants having a canceled event:
 
-```
+```bash
 curl -v -X DELETE -H "Content-Type: application/json" localhost:9000/flight/bookings/bestslot/booking4 
 ```
 
@@ -243,7 +243,7 @@ You'll see something like this in the service's log:
 ```
 
 The `Timeslot` which is the internal state of the Booking Slot Entity; should now be empty (no availability, no bookings):
-```
+```bash
 curl -H "Content-Type: application/json" localhost:9000/flight/availability/bestslot
 ```
 
